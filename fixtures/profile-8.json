@@ -1,0 +1,31 @@
+{
+  "name": "Turbo",
+  "phases": [
+    {
+      "type": "PRESSURE",
+      "skip": false,
+      "name": "Preinfusion",
+      "target": { "start": 3, "end": 3, "curve": "INSTANT" },
+      "stopConditions": { "time": 4000 },
+      "restriction": 4
+    },
+    {
+      "type": "PRESSURE",
+      "skip": false,
+      "name": "Shot",
+      "target": { "start": 3, "end": 6, "curve": "EASE_IN", "time": 3000 },
+      "stopConditions": { "time": 25000 },
+      "restriction": 5
+    },
+    {
+      "type": "PRESSURE",
+      "skip": true,
+      "name": "Decline",
+      "target": { "start": 6, "end": 4, "curve": "LINEAR", "time": 5000 },
+      "stopConditions": { "time": 5000 }
+    }
+  ],
+  "globalStopConditions": { "time": 30000, "weight": 48 },
+  "waterTemperature": 90,
+  "recipe": { "coffeeIn": 16, "coffeeOut": 48, "ratio": 3 }
+}

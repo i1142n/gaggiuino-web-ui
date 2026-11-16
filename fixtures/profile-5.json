@@ -1,0 +1,32 @@
+{
+  "name": "Londinium",
+  "phases": [
+    {
+      "type": "FLOW",
+      "skip": false,
+      "name": "Fill",
+      "target": { "start": 4, "end": 4, "curve": "INSTANT" },
+      "stopConditions": { "time": 10000, "pressureAbove": 3.5 },
+      "restriction": 4
+    },
+    {
+      "type": "PRESSURE",
+      "skip": false,
+      "name": "Soak",
+      "target": { "end": 3.5, "curve": "INSTANT" },
+      "stopConditions": { "time": 6000, "weight": 0.5 },
+      "restriction": 0.5
+    },
+    {
+      "type": "PRESSURE",
+      "skip": false,
+      "name": "Lever",
+      "target": { "start": 9, "end": 5, "curve": "EASE_OUT", "time": 25000 },
+      "stopConditions": {},
+      "restriction": 3
+    }
+  ],
+  "globalStopConditions": { "weight": 40 },
+  "waterTemperature": 92,
+  "recipe": { "coffeeIn": 18, "coffeeOut": 40, "ratio": 2.2 }
+}

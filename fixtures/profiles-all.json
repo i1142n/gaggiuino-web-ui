@@ -1,0 +1,22 @@
+[
+  {
+    "id": 3,
+    "name": "Classic 9 bar",
+    "selected": "false"
+  },
+  {
+    "id": 5,
+    "name": "Londinium",
+    "selected": "true"
+  },
+  {
+    "id": 6,
+    "name": "Blooming",
+    "selected": "false"
+  },
+  {
+    "id": 8,
+    "name": "Turbo",
+    "selected": "false"
+  }
+]

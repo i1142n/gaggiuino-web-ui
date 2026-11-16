@@ -1,0 +1,31 @@
+{
+  "name": "Classic 9 bar",
+  "phases": [
+    {
+      "type": "FLOW",
+      "skip": false,
+      "name": "Preinfusion",
+      "target": { "start": 2, "end": 2, "curve": "INSTANT" },
+      "stopConditions": { "time": 8000, "pressureAbove": 2.8 },
+      "restriction": 3
+    },
+    {
+      "type": "PRESSURE",
+      "skip": false,
+      "name": "Ramp",
+      "target": { "start": 3, "end": 9, "curve": "EASE_IN_OUT", "time": 4000 },
+      "stopConditions": { "time": 4000 },
+      "restriction": 6
+    },
+    {
+      "type": "PRESSURE",
+      "skip": false,
+      "name": "Extraction",
+      "target": { "start": 9, "end": 6, "curve": "LINEAR", "time": 20000 },
+      "stopConditions": {}
+    }
+  ],
+  "globalStopConditions": { "time": 45000, "weight": 36 },
+  "waterTemperature": 93,
+  "recipe": { "coffeeIn": 18, "coffeeOut": 36, "ratio": 2 }
+}

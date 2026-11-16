@@ -1,0 +1,32 @@
+{
+  "name": "Blooming",
+  "phases": [
+    {
+      "type": "FLOW",
+      "skip": false,
+      "name": "Wet",
+      "target": { "start": 4, "end": 4, "curve": "INSTANT" },
+      "stopConditions": { "time": 10000, "pressureAbove": 2.5 },
+      "restriction": 3
+    },
+    {
+      "type": "FLOW",
+      "skip": false,
+      "name": "Bloom",
+      "target": { "end": 0, "curve": "INSTANT" },
+      "stopConditions": { "time": 15000 }
+    },
+    {
+      "type": "FLOW",
+      "skip": false,
+      "name": "Extraction",
+      "target": { "start": 2, "end": 2.5, "curve": "LINEAR", "time": 10000 },
+      "stopConditions": {},
+      "restriction": 9,
+      "waterTemperature": 93
+    }
+  ],
+  "globalStopConditions": { "time": 60000, "weight": 45 },
+  "waterTemperature": 94,
+  "recipe": { "coffeeIn": 18, "coffeeOut": 45, "ratio": 2.5 }
+}
