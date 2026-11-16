@@ -5,3 +5,8 @@ __pycache__/
 # claude
 CHANGES.md
 
+# node
+node_modules/
+dist/
+data/
+
