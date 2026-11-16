@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import Fastify from 'fastify'
-import type { Curve, Phase, Profile, StopConditions } from '../server/gaggiuino.ts'
+import type { Phase, Profile, StopConditions } from '../server/gaggiuino.ts'
+import { phaseTarget, puckModel } from '../web/curve.ts'
 
 interface Reading {
   time: number
@@ -59,22 +60,6 @@ function currentStatus() {
   }
 }
 
-function easing(pct: number, curve: Curve) {
-  if (curve === 'LINEAR') return pct
-  if (curve === 'EASE_IN') return pct ** 1.675
-  if (curve === 'EASE_OUT') return 1 - (1 - pct) ** 1.675
-  return 0.5 * (Math.sin((pct - 0.5) * Math.PI) + 1)
-}
-
-function phaseTarget(phase: Phase, timeInPhase: number, phaseStart: Reading) {
-  const end = phase.target?.end ?? 0
-  const time = phase.target?.time ?? 0
-  const curve = phase.target?.curve ?? 'INSTANT'
-  if (curve === 'INSTANT' || time === 0) return end
-  const start = phase.target?.start || (phase.type === 'PRESSURE' ? phaseStart.pressure : phaseStart.pumpFlow)
-  return start + (end - start) * easing(Math.min(1, timeInPhase / time), curve)
-}
-
 function phaseStopReached(stop: StopConditions, timeInPhase: number, reading: Reading, shotWeight: number, phaseStart: Reading) {
   return (
     ((stop.time ?? 0) > 0 && timeInPhase >= stop.time!) ||
@@ -116,12 +101,13 @@ function startBrew(seconds: number) {
     const time = Date.now() - shotStart
     const phase = phases[phaseIndex]
     const timeInPhase = time - phaseStart.time
-    const resistance = 3 * Math.min(1, time / 10000)
-    const target = phaseTarget(phase, timeInPhase, phaseStart)
-    const restriction = phase.restriction ?? 0
     const isPressure = phase.type === 'PRESSURE'
-    const pressure = isPressure ? jitter(target, 0.1) : Math.min(restriction || 12, jitter(target * resistance, 0.1))
-    const pumpFlow = isPressure ? Math.min(restriction || 8, jitter(target / Math.max(resistance, 0.5), 0.1)) : jitter(target, 0.05)
+    const target = phaseTarget(phase, timeInPhase, isPressure ? phaseStart.pressure : phaseStart.pumpFlow)
+    const restriction = phase.restriction ?? 0
+    const targets = isPressure ? { pressure: target, flow: restriction || null } : { pressure: restriction || null, flow: target }
+    const model = puckModel(phase, targets, time)
+    const pressure = jitter(model.pressure, 0.1)
+    const pumpFlow = jitter(model.flow, isPressure ? 0.1 : 0.05)
     const targetTemperature = phase.waterTemperature ?? profile.waterTemperature ?? 0
     const temperature = jitter(targetTemperature - 0.4, 0.6)
 
