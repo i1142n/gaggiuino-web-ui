@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import Database from 'better-sqlite3'
 
-const defaults = {
+export const defaults = {
   gaggiuinoAddress: '192.168.8.103',
   agentPermissions: {
     readStatus: true,
@@ -21,7 +21,7 @@ const defaults = {
   agentsMd: '',
 }
 
-type Settings = typeof defaults
+export type Settings = typeof defaults
 
 const dataDir = path.join(import.meta.dirname, '..', 'data')
 fs.mkdirSync(dataDir, { recursive: true })
@@ -36,6 +36,7 @@ for (const [key, value] of Object.entries(defaults)) {
 
 const selectValue = db.prepare('SELECT value FROM settings WHERE key = ?')
 const upsertValue = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value')
+const deleteValue = db.prepare('DELETE FROM settings WHERE key = ?')
 
 export function getSetting<K extends keyof Settings>(key: K): Settings[K] {
   const row = selectValue.get(key) as { value: string }
@@ -54,4 +55,8 @@ export function getDescription(profileId: number): string {
 
 export function setDescription(profileId: number, text: string) {
   upsertValue.run(`description:${profileId}`, JSON.stringify(text))
+}
+
+export function deleteDescription(profileId: number) {
+  deleteValue.run(`description:${profileId}`)
 }
