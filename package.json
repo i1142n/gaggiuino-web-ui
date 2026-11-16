@@ -10,7 +10,8 @@
     "build": "npm run typecheck && vite build web",
     "typecheck": "tsc && vue-tsc -p web",
     "start": "node server/index.ts",
-    "fake": "node fake/gaggiuino.ts"
+    "fake": "node fake/gaggiuino.ts",
+    "test": "node --test web/*.test.ts"
   },
   "dependencies": {
     "@fastify/static": "^10.1.11",
