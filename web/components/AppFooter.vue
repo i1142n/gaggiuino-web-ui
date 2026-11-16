@@ -4,7 +4,7 @@ import { footer } from '../footer.ts'
 import IconButton from './IconButton.vue'
 
 function startEditing() {
-  footer.editing = true
+  if (footer.actions.save) footer.editing = true
   footer.actions.edit?.()
 }
 </script>
@@ -23,7 +23,7 @@ function startEditing() {
         <IconButton :icon="Save" label="Speichern" text tone="green" @click="footer.actions.save?.()" />
         <IconButton :icon="X" label="Abbrechen" text tone="grey" @click="footer.actions.cancel?.()" />
       </template>
-      <IconButton v-else-if="footer.actions.save" :icon="Pencil" label="Bearbeiten" text @click="startEditing" />
+      <IconButton v-else-if="footer.actions.save || footer.actions.edit" :icon="Pencil" label="Bearbeiten" text @click="startEditing" />
     </div>
   </footer>
 </template>

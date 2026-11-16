@@ -1,43 +1,59 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { ChevronLeft, ChevronRight } from '@lucide/vue'
 
-const props = defineProps<{ start?: number }>()
+const index = defineModel<number>({ default: 0 })
 
 const track = ref<HTMLElement>()
 const canGoLeft = ref(false)
 const canGoRight = ref(false)
+let settleTimer: number | undefined
 
-function update() {
+const visibleIndex = () => Math.round(track.value!.scrollLeft / track.value!.clientWidth)
+
+function updateHints() {
   const element = track.value!
   canGoLeft.value = element.scrollLeft > 1
   canGoRight.value = element.scrollLeft + element.clientWidth < element.scrollWidth - 1
 }
 
-function step(direction: number) {
-  track.value!.scrollBy({ left: direction * track.value!.clientWidth, behavior: 'smooth' })
+function onScroll() {
+  updateHints()
+  clearTimeout(settleTimer)
+  settleTimer = window.setTimeout(() => (index.value = visibleIndex()), 150)
 }
 
-const observer = new ResizeObserver(update)
+watch(
+  index,
+  (value) => {
+    if (value !== visibleIndex()) track.value!.scrollTo({ left: value * track.value!.clientWidth, behavior: 'smooth' })
+  },
+  { flush: 'post' },
+)
+
+const observer = new ResizeObserver(updateHints)
 
 onMounted(() => {
-  track.value!.scrollLeft = (props.start ?? 0) * track.value!.clientWidth
+  track.value!.scrollLeft = index.value * track.value!.clientWidth
   observer.observe(track.value!)
-  update()
+  updateHints()
 })
 
-onUnmounted(() => observer.disconnect())
+onUnmounted(() => {
+  observer.disconnect()
+  clearTimeout(settleTimer)
+})
 </script>
 
 <template>
   <div class="tile-swiper">
-    <div ref="track" class="track" @scroll="update">
+    <div ref="track" class="track" @scroll="onScroll">
       <slot />
     </div>
-    <button v-if="canGoLeft" class="hint left" aria-label="Vorherige Kachel" @click="step(-1)">
+    <button v-if="canGoLeft" class="hint left" aria-label="Vorherige Kachel" @click="index = visibleIndex() - 1">
       <ChevronLeft :size="20" />
     </button>
-    <button v-if="canGoRight" class="hint right" aria-label="Nächste Kachel" @click="step(1)">
+    <button v-if="canGoRight" class="hint right" aria-label="Nächste Kachel" @click="index = visibleIndex() + 1">
       <ChevronRight :size="20" />
     </button>
   </div>

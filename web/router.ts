@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from './pages/HomePage.vue'
+import ProfilePage from './pages/ProfilePage.vue'
 import SettingsPage from './pages/SettingsPage.vue'
 import { useFooter } from './footer.ts'
 
@@ -7,6 +8,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: HomePage },
+    { path: '/profile/:id', component: ProfilePage },
     { path: '/settings', component: SettingsPage },
   ],
 })
