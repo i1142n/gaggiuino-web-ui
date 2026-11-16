@@ -167,6 +167,17 @@ function startBrew(seconds: number) {
 
 const app = Fastify({ logger: true })
 
+const failingPaths = new Set<string>()
+
+app.addHook('onRequest', async (request, reply) => {
+  if (failingPaths.delete(request.url)) return reply.code(500).type('text/plain').send('Forced failure')
+})
+
+app.post<{ Querystring: { path: string } }>('/fake/fail', async (request) => {
+  failingPaths.add(request.query.path)
+  return { failNext: request.query.path }
+})
+
 app.get('/api/health', async () => ({ status: 'ok' }))
 
 app.get('/api/settings/versions', async () => versions)
