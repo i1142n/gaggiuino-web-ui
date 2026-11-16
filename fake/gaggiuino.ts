@@ -1,37 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import Fastify from 'fastify'
-
-type Curve = 'EASE_IN_OUT' | 'EASE_IN' | 'EASE_OUT' | 'LINEAR' | 'INSTANT'
-
-interface StopConditions {
-  time?: number
-  pressureAbove?: number
-  pressureBelow?: number
-  flowAbove?: number
-  flowBelow?: number
-  weight?: number
-  waterPumpedInPhase?: number
-}
-
-interface Phase {
-  type: 'FLOW' | 'PRESSURE' | 'MANUAL'
-  name?: string
-  skip?: boolean
-  target?: { start?: number; end?: number; curve?: Curve; time?: number }
-  restriction?: number
-  stopConditions?: StopConditions
-  waterTemperature?: number
-}
-
-interface Profile {
-  id: number
-  name: string
-  phases: Phase[]
-  globalStopConditions?: { time?: number; weight?: number; waterPumped?: number }
-  waterTemperature?: number
-  recipe?: { coffeeIn?: number; coffeeOut?: number; ratio?: number }
-}
+import type { Curve, Phase, Profile, StopConditions } from '../server/gaggiuino.ts'
 
 interface Reading {
   time: number
